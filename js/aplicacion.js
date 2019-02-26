@@ -15,7 +15,6 @@ Aplicacion.prototype.dibujarFiltros = function() {
     this.dibujarHorarios();
     this.dibujarRubros();
     this.dibujarCiudades();
-
 }
 
 //Función que se encarga de dibujar todos los restaurantes que recibe por parámetro. Cuando hablamos de dibujar, nos referimos a crear
