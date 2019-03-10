@@ -3,7 +3,6 @@ var Aplicacion = function(listado) {
         this.dibujarListado(listado.restaurantes)
         this.dibujarFiltros();
         this.registrarEventos();
-
     }
     //Esta función le asigna al botón "Buscar" la función filtrarRestaurantes()
 Aplicacion.prototype.registrarEventos = function() {
@@ -65,16 +64,22 @@ Aplicacion.prototype.crearTarjetaDeRestaurante = function(restaurant) {
         </div>
         <div class="reservas">
             <span class="reserva">¡Reserva tu lugar!</span>
+
+            <div class="fecha-container">
+            <p>Fecha: <input type="text" id="datepicker"></p>
+            </div>
+
             <div class="horarios-container">
             </div>
         </div>
     </div>
     `);
-
+    
     //Buscamos el elemento que se corresponde con la puntuación y le registramos al evento click, la funcionalidad de calificar un restaurant
     card.find(".puntuacion").click(function() {
         self.calificarRestaurant(restaurant);
     });
+    
 
     //Buscamos el contendor donde se van a cargar los horarios
     var contenedorHorarios = card.find(".horarios-container");
@@ -117,12 +122,11 @@ Aplicacion.prototype.calificarRestaurant = function(restaurant) {
 //Esta función se encarga de enviarle un mensaje al listado para que reserve un horario de un determinado restaurant
 Aplicacion.prototype.reservarUnHorario = function(restaurant, horario) {
     this.listado.reservarUnHorario(restaurant.id, horario)
-
     //Se obtiene elemento que se corresponde con el id del restaurante al que se va a reservar el horario
     var restaurantActualizar = $("#" + restaurant.id);
     //Se busca el elemento HTML que contiene el horario que se va a sacar
     var horarioASacar = restaurantActualizar.find("span:contains(" + horario + ")")
-        //Se verifica si quedó algún horario disponible. En el caso de que no, se agrega el mensajde de "No hay mas horarios disponibles"
+    //Se verifica si quedó algún horario disponible. En el caso de que no, se agrega el mensajde de "No hay mas horarios disponibles"
     var cantidadHorarios = restaurantActualizar.find(".horario").length;
     if (cantidadHorarios === 1) {
         restaurantActualizar.find(".reserva").html("No hay más mesas disponibles 😪")
@@ -143,7 +147,7 @@ Aplicacion.prototype.dibujarCiudades = function() {
     this.cargarOpcionDefault("filtro-ciudad", "Ciudad");
     this.cargarOpcionTodos("filtro-ciudad");
 
-    this.listado.obtC().forEach(function(ciudad) {
+    this.listado.obtenerUbicacion().forEach(function(ciudad) {
         var nuevaOpcion = $("<option/>").text(ciudad).val(ciudad);
         nuevaOpcion.appendTo("#filtro-ciudad");
     });
@@ -155,7 +159,7 @@ Aplicacion.prototype.dibujarRubros = function() {
     this.cargarOpcionDefault("filtro-rubro", "Rubro");
     this.cargarOpcionTodos("filtro-rubro")
 
-    this.listado.obtR().forEach(function(rubro) {
+    this.listado.obtenerRubros().forEach(function(rubro) {
         var nuevaOpcion = $("<option/>").text(rubro).val(rubro);
         nuevaOpcion.appendTo("#filtro-rubro");
     });
@@ -168,7 +172,7 @@ Aplicacion.prototype.dibujarHorarios = function() {
     this.cargarOpcionDefault("filtro-horario", "Horario");
     this.cargarOpcionTodos("filtro-horario")
 
-    this.listado.obtH().forEach(function(horario) {
+    this.listado.obtenerHorarios().forEach(function(horario) {
         var nuevaOpcion = $("<option/>").text(horario).val(horario);
         nuevaOpcion.appendTo("#filtro-horario");
     });
@@ -211,5 +215,6 @@ Aplicacion.prototype.filtrarRestaurantes = function() {
     var restaurantesFiltrados = this.listado.obtenerRestaurantes(filtroRubro, filtroCiudad, filtroHorario);
     this.dibujarListado(restaurantesFiltrados);
 }
+
 
 var aplicacion = new Aplicacion(listado);

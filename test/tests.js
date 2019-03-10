@@ -3,30 +3,31 @@ var expect = chai.expect;
 // Test Reservar Horario
 describe('Test de reservar horario', function(){
         let resto;
+        const horarios = ["13:00", "15:30", "18:00"]
         
+         
         beforeEach(function() {
-        resto = new Restaurant(1, "TAO Uptown", "Asiática", "Nueva York", ["13:00", "15:30", "18:00"], "../img/asiatica1.jpg", [6, 7, 9, 10, 5])
-        arrayOriginal = resto.horarios;
+        resto = new Restaurant(1, "TAO Uptown", "Asiática", "Nueva York", horarios, "../img/asiatica1.jpg", [6, 7, 9, 10, 5])
         })
 
         it('Elimina un horario del array', function(){
-                resto.reservarHorario("13:00");
-                expect(resto.horarios).to.be.an('array').that.does.not.include("13:00");
-                expect(resto.horarios).to.be.an('array').to.equal(arrayOriginal);
+                resto.reservarHorario("15:30");
+                expect(resto.horarios).to.be.an('array').to.not.include("15:30");
+                expect(resto.horarios).to.be.an('array').to.eql(["13:00", "18:00"]);
         })
         
         it('El array queda con un elemento menos', function(){
-                var arrayLenght = arrayOriginal.length;
+                var arrayLenght = horarios.length;
                 resto.reservarHorario("13:00");
-                expect(resto.horarios.length).to.eql(--arrayLenght);
+                expect(resto.horarios.length).not.to.eql(arrayLenght);
         })
         it('Horario invalido no modifica el array', function(){ 
                 resto.reservarHorario("12:00");
-                expect(resto.horarios).to.equal(arrayOriginal);
+                expect(resto.horarios).to.eql(horarios);
         })
         it('Horario vacio no modifica el array', function(){ 
                 resto.reservarHorario();
-                expect(resto.horarios).to.equal(arrayOriginal);
+                expect(resto.horarios).to.eql(horarios);
         })
         
 });
@@ -51,7 +52,7 @@ describe('Test de Calificar Resto', function(){
         beforeEach(function() {
         resto = new Restaurant(1, "TAO Uptown", "Asiática", "Nueva York", ["13:00", "15:30", "18:00"], "../img/asiatica1.jpg", [10,1])
         calificacionOriginal = resto.calificaciones;
-        })
+        }) 
 
         it('Calificación positiva', function(){
                 resto.calificar(2)
@@ -100,7 +101,7 @@ describe('Test de Calificar Resto', function(){
         })
 
 
-})
+});
 
 
 // Test Buscar Restaurante ID buscarRestaurante(id)
@@ -120,7 +121,7 @@ describe('Test de Buscar Resto por ID', function(){
         it('Busca Resto ID inválido', function(){
                 expect(listadotest.buscarRestaurante(3)).to.equal("No se ha encontrado ningún restaurant")
         })
-})
+});
 
 // Test Obtener Restaurante listado.obtenerRestaurantes('Pizza', null, null)
 describe('Test de Buscar Obtener Restaurante', function(){
@@ -153,5 +154,39 @@ describe('Test de Buscar Obtener Restaurante', function(){
                 newlistado = listadoTesting.obtenerRestaurantes('Rubrotest', null, 'RubroHora')
                 expect(newlistado.length).to.eql(2);
                 expect(newlistado).to.eql([restoRubro,restoHorario]);
+        }) 
+});
+
+// Test Reservar Restaurante 
+describe('Test Reservar Restaurante', function(){
+        let reserva1 = new Reserva (new Date(2018, 7, 24, 11, 00), 8, 350, "DES1")
+        let reserva2 = new Reserva (new Date(2018, 7, 27, 14, 100), 2, 150, "DES200")
+        context(
+                "Resto: (new Date(2018, 7, 24, 11, 00), 8, 350, DES1)",
+                function() {
+                it('Calcular precio base ', function(){
+                        precioBase = reserva1.precioBase()
+                        expect(precioBase).to.eql(2800);
+                })
+
+                it('Calcular precio total', function(){
+                        precioTotal = reserva1.precioTotal()
+                        expect(precioTotal).to.eql(2450);
+                })
         })
+
+        context(
+                "Resto: (new Date(2018, 7, 27, 14, 100), 2, 150, DES200)",
+                function() {
+                it('Calcular precio base ', function(){
+                        precioBase = reserva2.precioBase()
+                        expect(precioBase).to.eql(300);
+                })
+
+                it('Calcular precio total', function(){
+                        precioTotal = reserva2.precioTotal()
+                        expect(precioTotal).to.eql(100);
+                })
+        })
+
 })
