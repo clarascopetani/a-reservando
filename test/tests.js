@@ -159,10 +159,14 @@ describe('Test de Buscar Obtener Restaurante', function(){
 
 // Test Reservar Restaurante 
 describe('Test Reservar Restaurante', function(){
-        var restReserva1 = new Restaurant(1, "Chez Moi", "Ensalada", "París", ["11:00", "12:00", "14:30"], "../img/ensalada1.jpg", [8, 4, 5, 5, 5, 5,], 350);
-        var restReserva2 = new Restaurant(1, "Chez Moi", "Ensalada", "París", ["11:00", "12:00", "14:30"], "../img/ensalada1.jpg", [8, 4, 5, 5, 5, 5,], 150);
-        var reserva1 = new Reserva (new Date(2018, 7, 24, 11, 00), 8, restReserva1.precio, "DES1")
-        var reserva2 = new Reserva (new Date(2018, 7, 27, 14, 100), 2, restReserva2.precio, "DES200")
+        var reservarResto1 = new Restaurant(1, "Chez Moi", "Ensalada", "París", ["11:00", "12:00", "14:30"], "../img/ensalada1.jpg", [8, 4, 5, 5, 5, 5,], 350);
+        var reservarResto2 = new Restaurant(1, "Chez Moi", "Ensalada", "París", ["11:00", "12:00", "14:30"], "../img/ensalada1.jpg", [8, 4, 5, 5, 5, 5,], 150);
+        var reservarResto3 = new Restaurant(1, "Chez Moi", "Ensalada", "París", ["11:00", "12:00", "14:30"], "../img/ensalada1.jpg", [8, 4, 5, 5, 5, 5,], 150);
+        
+        var reserva1 = new Reserva (new Date(2018, 7, 24, 11, 00), 8, reservarResto1.precio, "DES1")
+        var reserva2 = new Reserva (new Date(2018, 7, 27, 14, 100), 2, reservarResto2.precio, "DES200")
+        var reserva3 = new Reserva (new Date(2018, 7, 27, 14, 100), 2, reservarResto3.precio, "DES15")
+        
         context(
                 "Resto: (new Date(2018, 7, 24, 11, 00), 8, 350, DES1)",
                 function() {
@@ -188,6 +192,20 @@ describe('Test Reservar Restaurante', function(){
                 it('Calcular precio total', function(){
                         precioTotal = reserva2.precioTotal()
                         expect(precioTotal).to.eql(100);
+                })
+        })
+
+        context(
+                "Resto: (new Date(2018, 7, 27, 14, 100), 2, 150, DES15)",
+                function() {
+                it('Calcular precio base ', function(){
+                        precioBase = reserva3.precioBase()
+                        expect(precioBase).to.eql(300);
+                })
+
+                it('Calcular precio total', function(){
+                        precioTotal = reserva3.precioTotal()
+                        expect(precioTotal).to.eql(255);
                 })
         })
 

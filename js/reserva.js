@@ -11,7 +11,8 @@ Reserva.prototype.precioBase = function() {
 }
 
 Reserva.prototype.precioTotal = function() {
-    let precioFinal = this.precioBase() + adicionales(this.precio, this.horarioReserva) - (descuentoPersonas(this.precio, this.cantPersonas) + descuentoCodigo(this.precio, this.codigoDescuento));
+    const precioBase = this.precioBase()
+    let precioFinal = precioBase + adicionales(this.precio, this.horarioReserva) - (descuentoPersonas(this.precio, this.cantPersonas) + descuentoCodigo(this.precio, this.codigoDescuento, precioBase));
     return precioFinal
 }
 
@@ -20,23 +21,24 @@ function descuentoPersonas(precio, personas){
     var descuentoTotal = 0;
 
     if (personas >= 4 && personas <= 6) {
-        descuentoTotal = precio * 5;
+        descuentoTotal = precio*5;
     }
     if (personas >= 7 && personas <= 8) {
-        descuentoTotal  = precio * 10;
+        descuentoTotal  = precio*10;
         
     }
     if (personas > 8) {
-        descuentoTotal  = precio * 15;
+        descuentoTotal  = precio*15;
     }
+    console.log('descuento personas', descuentoTotal / 100)
     return descuentoTotal / 100;
 }
 
 // Descuento por Codigo
-function descuentoCodigo(precio, codigo){
+function descuentoCodigo(precio, codigo, precioBase){
     switch(codigo){
         case 'DES15':
-            precio = precio *= 15 / 100
+            precio = precioBase*15/100
             break;
         case 'DES200':
             precio = 200
@@ -62,7 +64,8 @@ function adicionales(precio, horario){
     }
     
     if (dia >= 5 && dia <= 7) {
-        adicionalHora = precio*10/100;
+        adicionalDia = precio*10/100;
     }
     return adicionalHora + adicionalDia;
+
 }
