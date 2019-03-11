@@ -1,3 +1,6 @@
+var precioTotal
+var cantidadPersonas
+
 var Aplicacion = function(listado) {
         this.listado = listado;
         this.dibujarListado(listado.restaurantes)
@@ -64,11 +67,6 @@ Aplicacion.prototype.crearTarjetaDeRestaurante = function(restaurant) {
         </div>
         <div class="reservas">
             <span class="reserva">¡Reserva tu lugar!</span>
-
-            <div class="fecha-container">
-            <p>Fecha: <input type="text" id="datepicker"></p>
-            </div>
-
             <div class="horarios-container">
             </div>
         </div>
@@ -80,7 +78,6 @@ Aplicacion.prototype.crearTarjetaDeRestaurante = function(restaurant) {
         self.calificarRestaurant(restaurant);
     });
     
-
     //Buscamos el contendor donde se van a cargar los horarios
     var contenedorHorarios = card.find(".horarios-container");
 
@@ -100,23 +97,27 @@ Aplicacion.prototype.crearTarjetaDeRestaurante = function(restaurant) {
 //se corresponde con el id que se está calificando y se le actualiza la puntuación
 Aplicacion.prototype.calificarRestaurant = function(restaurant) {
     var self = this;
-    swal("Ingrese su calificación (valor numérico entre 1 y 10) :", {
-        content: "input",
-    }).then((calif) => {
-        var nuevaCalificacion = parseInt(calif);
-        if (nuevaCalificacion >= 1 && nuevaCalificacion <= 10) {
-            self.listado.calificarRestaurant(restaurant.id, nuevaCalificacion);
-            var restaurantActualizar = $("#" + restaurant.id);
-            restaurantActualizar.find(".puntuacion").html(restaurant.obtenerPuntuacion());
-        } else {
-            swal({
-                title: "Error",
-                text: "Ingrese una calificación válida",
-                icon: "error",
-                button: "Continuar",
-            });
-        }
-    });
+    var calif;
+        Swal.fire({
+          title: "Ingrese su calificación (valor numérico entre 1 y 10) :",
+          input: 'number',
+          inputPlaceholder: '1 al 10',
+          showCancelButton: true,
+          inputValidator: (calif) => {
+            return new Promise((resolve) => {
+              if (calif >= 1 && calif <= 10 ) {
+                var nuevaCalificacion = parseInt(calif);
+                console.log('entre', nuevaCalificacion)
+                self.listado.calificarRestaurant(restaurant.id, nuevaCalificacion);
+                var restaurantActualizar = $("#" + restaurant.id);
+                restaurantActualizar.find(".puntuacion").html(restaurant.obtenerPuntuacion());
+                resolve()
+              } else {
+                resolve('Ingrese una calificación válida')
+              }
+            })
+          }
+        })
 }
 
 //Esta función se encarga de enviarle un mensaje al listado para que reserve un horario de un determinado restaurant
@@ -131,15 +132,49 @@ Aplicacion.prototype.reservarUnHorario = function(restaurant, horario) {
     if (cantidadHorarios === 1) {
         restaurantActualizar.find(".reserva").html("No hay más mesas disponibles 😪")
     }
-    horarioASacar.remove();
+   
 
-    swal({
-        title: "!Felicitaciones!",
-        text: "Has reservado una mesa en " + restaurant.nombre + " a las " + horario,
-        icon: "success",
-        button: "Continuar",
-    });
+    Swal.mixin({
+        input: 'text',
+        confirmButtonText: 'Siguiente &rarr;',
+        showCancelButton: true,
+        reverseButtons: true,
+        progressSteps: ['1', '2', '3']
+      }).queue([
+        {
+          title: 'Completá tu reserva!',
+          text: "Elegiste " + restaurant.nombre + " a las " + horario,
+          input: false,
+        },
+        {   
+            title: 'Cuantas personas son?',
+            input: "number",
+        },
+        {   
+            title: 'Tenes un código de decuento?',
+        }
+      ]).then((result) => {
+        if (result.value) {
+            datosReserva = result.value
+            cantidadPersonas = parseInt(datosReserva[1]);
+            var codigoDescuento = datosReserva[2];
+            var horaADate = horario.split(':');
+            var diaDate = new Date(new Date().getFullYear(),new Date().getMonth() , new Date().getDate(),horaADate[0],horaADate[1]);
+            var reserva = new Reserva (diaDate, cantidadPersonas,listado.buscarRestaurante(restaurant.id).precio, codigoDescuento)
+            precioTotal = reserva.precioTotal()
+        Swal.fire({
+            title: 'Listo!',
+            html: 'Tenes una reserva para ' +  cantidadPersonas + ' personas en  ' +
+            restaurant.nombre + " a las " + horario
+            + '. Precio total: ' + '$' + precioTotal,
+            confirmButtonText: 'Perfecto!'
+            })
+            horarioASacar.remove();
+        }
+      })
 }
+
+
 
 //Esta función se encarga de generar las opciones del filtro de las ciudades.
 Aplicacion.prototype.dibujarCiudades = function() {

@@ -18,7 +18,7 @@ Reserva.prototype.precioTotal = function() {
 // Descuento por cantidad de personas
 function descuentoPersonas(precio, personas){
     var descuentoTotal = 0;
- 
+
     if (personas >= 4 && personas <= 6) {
         descuentoTotal = precio * 5;
     }
@@ -34,21 +34,20 @@ function descuentoPersonas(precio, personas){
 
 // Descuento por Codigo
 function descuentoCodigo(precio, codigo){
-    var descuento
     switch(codigo){
         case 'DES15':
-            descuento = precio *= 15 / 100
+            precio = precio *= 15 / 100
             break;
         case 'DES200':
-            descuento = 200
+            precio = 200
             break;
         case 'DES1':
-            descuento = precio
+            precio = precio
             break;
         default:
-            descuento = 0;
+            precio = 0;
     }
-    return descuento
+    return precio
 }
 
 // Adicionales
@@ -60,7 +59,9 @@ function adicionales(precio, horario){
 
     if (hora >= 13 && hora <= 14 || hora >= 20 && hora <= 21) {
         adicionalHora = precio*5/100;
-    } else if (dia >= 5 && dia <= 7) {
+    }
+    
+    if (dia >= 5 && dia <= 7) {
         adicionalHora = precio*10/100;
     }
     return adicionalHora + adicionalDia;

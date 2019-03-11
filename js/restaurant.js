@@ -1,4 +1,4 @@
-var Restaurant = function(id, nombre, rubro, ubicacion, horarios, imagen, calificaciones) {
+var Restaurant = function(id, nombre, rubro, ubicacion, horarios, imagen, calificaciones, precio) {
     this.id = id;
     this.nombre = nombre;
     this.rubro = rubro;
@@ -6,6 +6,7 @@ var Restaurant = function(id, nombre, rubro, ubicacion, horarios, imagen, califi
     this.horarios = horarios;
     this.imagen = imagen;
     this.calificaciones = calificaciones;
+    this.precio = precio;
 }
 
 Restaurant.prototype.reservarHorario = function(horarioReservado) {
