@@ -1,4 +1,6 @@
-//borrar
+var precioTotal
+var cantidadPersonas
+var diaDate
 var horaADate
 var reserva
 
@@ -136,63 +138,73 @@ Aplicacion.prototype.reservarUnHorario = function(restaurant, horario) {
     }
 
     Swal.mixin({
+        input: 'text',
         confirmButtonText: 'Siguiente &rarr;',
         showCancelButton: true,
         reverseButtons: true,
         progressSteps: ['1', '2', '3'],
       }).queue([
-        //Paso 1
         {
           title: 'Completá tu reserva!',
           input: false,
           html: '<div type="text" id="datepicker"></div>',
           onOpen: function() { 
-              dia = $( "#datepicker" ).datepicker(
-                { onSelect: function(dia){ 
-                    dia = new Date(dia)
-                    console.log(dia)
-                    return 
-                }})
-        }},
-        //Paso 2
+            diaDate = $( "#datepicker" ).datepicker(
+               {dateFormat: "m-d-yy" ,
+               onSelect: function(dia){ 
+                   diaDate = dia 
+               }  
+           });
+         },
+          preConfirm:(diaDate) => {
+            if(undefine) {
+                Swal.insertQueueStep({
+                    type: 'error',
+                    title: 'ingresa cantidad de personas',
+                    input: 'number',
+                  })
+            } else {
+                console.log(diaDate)
+                }
+            },
+        },
         {   
             title: 'Cuantas personas son?',
-            input: 'range',
-            inputAttributes: {
-                  min: 1,
-                  max: 30,
-                  step: 1
-                },
-            inputValue: 1
-
+            input: "number",
+            inputValidator: (value) => {
+                return new Promise((resolve) => {
+                  if (value > 0 || value !== NaN ) {
+                    var cantidadPersonas = parseInt(value)
+                    resolve()
+                  } else {
+                    resolve('Ingrese una calificación válida')
+                  }
+                })
+              }
         },
-        //Paso 3
         {   
             title: 'Tenes un código de decuento?',
-            input: 'text'
         }
       ]).then((result) => {
-        console.log(result.value, dia)
-        //if()
         if (result.value) {
-            var diaReserva = new Date(moment().format(dia + "," + horario));
             datosReserva = result.value
-
-            Reserva.cantidadPersonas = parseInt(datosReserva[1]);
-            Reserva.codigoDescuento = datosReserva[2];
-
-            reserva = new Reserva (diaReserva, Reserva.cantidadPersonas,listado.buscarRestaurante(restaurant.id).precio, Reserva.codigoDescuento)
-            var precioTotal = reserva.precioTotal()
+            //cantidadPersonas = parseInt(datosReserva[1]);
+            var codigoDescuento = datosReserva[2];
+            var diaReserva = new Date(moment().format(diaDate + "," + horario));
+            reserva = new Reserva (diaReserva, cantidadPersonas,listado.buscarRestaurante(restaurant.id).precio, codigoDescuento)
+            console.log(reserva)
+            precioTotal = reserva.precioTotal()
         Swal.fire({
             title: 'Listo!',
-            html: 'Tenes una reserva para: ' + Reserva.cantidadPersonas + ' personas en  ' 
-            + restaurant.nombre + " el " + diaReserva + " a las " + horario
+            html: 'Tenes una reserva para: ' + cantidadPersonas + ' personas en  ' 
+            + restaurant.nombre + " el " + diaDate + " a las " + horario
             + '. Precio total: ' + '$' + precioTotal,
             confirmButtonText: 'Perfecto!'
             })
             horarioASacar.remove();
-        }
-
+        } else {
+            resolve('Ingrese una calificación válida')
+          }
       })
 }
 

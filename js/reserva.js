@@ -13,25 +13,24 @@ Reserva.prototype.precioBase = function() {
 Reserva.prototype.precioTotal = function() {
     const precioBase = this.precioBase()
     let precioFinal = precioBase + adicionales(this.precio, this.horarioReserva) - (descuentoPersonas(this.precio, this.cantPersonas) + descuentoCodigo(this.precio, this.codigoDescuento, precioBase));
+    console.log(precioFinal)
     return precioFinal
 }
 
 // Descuento por cantidad de personas
-function descuentoPersonas(precio, personas){
+function descuentoPersonas(precioBase, personas){
     var descuentoTotal = 0;
 
     if (personas >= 4 && personas <= 6) {
-        descuentoTotal = precio*5;
+        descuentoTotal = Math.floor(precioBase*5)/100;
     }
     if (personas >= 7 && personas <= 8) {
-        descuentoTotal  = precio*10;
-        
+        descuentoTotal  = Math.floor(precioBase*10)/100;
     }
     if (personas > 8) {
-        descuentoTotal  = precio*15;
+        descuentoTotal  = Math.floor(precioBase*15)/100;
     }
-    console.log('descuento personas', descuentoTotal / 100)
-    return descuentoTotal / 100;
+    return descuentoTotal;
 }
 
 // Descuento por Codigo
@@ -60,12 +59,12 @@ function adicionales(precio, horario){
     var adicionalDia = 0;
 
     if (hora >= 13 && hora <= 14 || hora >= 20 && hora <= 21) {
+        console.log('entro en adicional 5%')
         adicionalHora = precio*5/100;
     }
-    
-    if (dia >= 5 && dia <= 7) {
+    if (dia == 0 || dia >= 5) {
+        console.log('entro en adicional 10%')
         adicionalDia = precio*10/100;
     }
     return adicionalHora + adicionalDia;
-
 }
