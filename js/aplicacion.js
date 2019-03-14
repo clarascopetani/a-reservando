@@ -1,6 +1,7 @@
 //borrar
 var horaADate
 var reserva
+var diaReservado = new Date();
 
 var Aplicacion = function(listado) {
         this.listado = listado;
@@ -124,6 +125,7 @@ Aplicacion.prototype.calificarRestaurant = function(restaurant) {
 
 //Esta función se encarga de enviarle un mensaje al listado para que reserve un horario de un determinado restaurant
 Aplicacion.prototype.reservarUnHorario = function(restaurant, horario) {
+
     this.listado.reservarUnHorario(restaurant.id, horario)
     //Se obtiene elemento que se corresponde con el id del restaurante al que se va a reservar el horario
     var restaurantActualizar = $("#" + restaurant.id);
@@ -147,13 +149,17 @@ Aplicacion.prototype.reservarUnHorario = function(restaurant, horario) {
           input: false,
           html: '<div type="text" id="datepicker"></div>',
           onOpen: function() { 
-              dia = $( "#datepicker" ).datepicker(
-                { onSelect: function(dia){ 
-                    dia = new Date(dia)
-                    console.log(dia)
-                    return 
+            dia = $( "#datepicker" ).datepicker(
+                {dateFormat: "yyy-mm-dd",
+                onSelect: function(dia){ 
+                    diaReservado = new Date(dia)
+                    console.log('esto es dia en datepicker', diaReservado)
+                    return diaReservado
                 }})
-        }},
+                console.log('esto es dia en dia', diaReservado)
+            }
+            
+        },
         //Paso 2
         {   
             title: 'Cuantas personas son?',
@@ -172,21 +178,23 @@ Aplicacion.prototype.reservarUnHorario = function(restaurant, horario) {
             input: 'text'
         }
       ]).then((result) => {
-        console.log(result.value, dia)
-        //if()
+
         if (result.value) {
-            var diaReserva = new Date(moment().format(dia + "," + horario));
+            var horarioReserva = horario.split(':')
+        
+            diaReservado.setHours(moment().format(horarioReserva[0],horarioReserva[1]))
             datosReserva = result.value
 
-            Reserva.cantidadPersonas = parseInt(datosReserva[1]);
+            Reserva.cantidadPersonas = datosReserva[1];
             Reserva.codigoDescuento = datosReserva[2];
 
-            reserva = new Reserva (diaReserva, Reserva.cantidadPersonas,listado.buscarRestaurante(restaurant.id).precio, Reserva.codigoDescuento)
+            reserva = new Reserva (diaReservado, Reserva.cantidadPersonas, listado.buscarRestaurante(restaurant.id).precio, Reserva.codigoDescuento)
             var precioTotal = reserva.precioTotal()
+            
         Swal.fire({
             title: 'Listo!',
             html: 'Tenes una reserva para: ' + Reserva.cantidadPersonas + ' personas en  ' 
-            + restaurant.nombre + " el " + diaReserva + " a las " + horario
+            + restaurant.nombre + " el " + diaReservado + " a las " + horario
             + '. Precio total: ' + '$' + precioTotal,
             confirmButtonText: 'Perfecto!'
             })
