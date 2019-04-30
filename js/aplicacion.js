@@ -153,10 +153,10 @@ Aplicacion.prototype.reservarUnHorario = function(restaurant, horario) {
                 {dateFormat: "yyy-mm-dd",
                 onSelect: function(dia){ 
                     diaReservado = new Date(dia)
-                    console.log('esto es dia en datepicker', diaReservado)
+                
                     return diaReservado
                 }})
-                console.log('esto es dia en dia', diaReservado)
+            
             }
             
         },
@@ -194,7 +194,7 @@ Aplicacion.prototype.reservarUnHorario = function(restaurant, horario) {
         Swal.fire({
             title: 'Listo!',
             html: 'Tenes una reserva para: ' + Reserva.cantidadPersonas + ' personas en  ' 
-            + restaurant.nombre + " el " + diaReservado + " a las " + horario
+            + restaurant.nombre + " el " + moment(diaReservado).format("MMMM D") + " a las " + horario
             + '. Precio total: ' + '$' + precioTotal,
             confirmButtonText: 'Perfecto!'
             })
